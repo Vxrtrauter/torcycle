@@ -21,9 +21,7 @@ def start_tor():
 
 	running = check_tor_state()
 
-	if running is True:
-		print("Tor is already running, skipping...")
-	else:		
+	if running is False:	
 		tor = subprocess.Popen([
 			"tor",
 			"-f", "torrc",
@@ -33,11 +31,13 @@ def start_tor():
 			"--CookieAuthentication", "1",
 			"--Log", "notice stdout",
 		])
+		
 
 		return tor # returning tor so it can be killed later
 
 def connect_control():
 	return socket.create_connection(("127.0.0.1", 9051))
+	
 
 def auth(csocket, cookie_path=f"{tor_data_folder}/control_auth_cookie"):
 	with open (cookie_path, "rb") as file:
@@ -45,12 +45,15 @@ def auth(csocket, cookie_path=f"{tor_data_folder}/control_auth_cookie"):
 	command = b"AUTHENTICATE " + cookie.hex().encode() + b"\r\n"
 	csocket.sendall(command)
 	response = csocket.recv(1024)
+	print("Successfully authenticated with Tor!")
 	if not response.startswith(b"250"):
 		raise Exception("Auth Failed: ", response.decode())
 	
 def send_newnym(csocket):
 	csocket.sendall(b"SIGNAL NEWNYM\r\n")
 	response = csocket.recv(1024)
+	print("Signal NEWNYM successfully sent!")
+
 	if not response.startswith(b"250"):
 		raise Exception("NEWNYM Failed: ", response.decode())
 
@@ -78,11 +81,18 @@ def ipcheck():
 
 
 
+
 if __name__ == "__main__":
 	try:
-		start_tor()
-		time.sleep(10)
+		running = check_tor_state()
+		if running:
+			print("Tor is already running, skipping...")
+		else:
+			start_tor()
+			time.sleep(5)
 		csocket = connect_control()
+		if csocket:
+			print("Socket Created!")
 		auth(csocket)
 		# send_term(csocket)
 		while True:
@@ -90,5 +100,10 @@ if __name__ == "__main__":
 			print("Current IP: " + ipcheck())
 			time.sleep(10)
 	except KeyboardInterrupt:
+		send_term(csocket)
 		print("Goodbye!")
 	
+
+
+	# add methods:
+	# newnym and reauth
