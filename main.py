@@ -73,9 +73,12 @@ def ipcheck():
 		"https": "socks5h://127.0.0.1:9050",
 	}
 
-	response = requests.get("http://httpbin.org/ip", proxies=proxies).json()
-	address = response['origin']
-	return address
+	response = requests.get("http://httpbin.org/ip", proxies=proxies)
+
+	if response.headers.get('content-type', '').startswith('application/json'):
+		return response.json()['origin']
+	else:
+		return "Unknown"
 
 
 
