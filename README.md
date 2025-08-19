@@ -5,7 +5,7 @@ Everytime you connect to Tor, it builds up a circuit for you. Those circuits are
 This tool now uses that to change your IP - Every 10 Seconds, it sends a "SIGNAL NEWNYM" to Tor, which makes it build a new circuit
 and gives you a new IP-Addresss.
 
-Your regular IP (The one provided by your ISP) stays the same. This program routes your Traffic through Tor.
+Your regular IP (The one provided by your ISP) stays the same. This program is intended to route your Traffic through Tor.
 
 
 ### To-Do:
