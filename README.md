@@ -10,6 +10,7 @@ Your regular IP (The one provided by your ISP) stays the same. This program is i
 
 ### To-Do:
 - Add local SOCKS5 proxy to route the traffic through the program which controls Tor
+- Eventually add GUI to learn more QT
 
 
 
